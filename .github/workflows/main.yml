@@ -10,9 +10,7 @@ on:
 
 jobs:
   build:
-
     runs-on: macOS-latest
-    
     steps:
     - uses: actions/checkout@master
     - name: Brew
@@ -21,3 +19,5 @@ jobs:
       run: bundle install
     - name: Fastlane
       run: ./fastlane/travis.sh
+      env:
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
