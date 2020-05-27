@@ -1,1 +1,4 @@
 # SwiftBeanCountModel
+
+
+Model for SwiftBeanCount
