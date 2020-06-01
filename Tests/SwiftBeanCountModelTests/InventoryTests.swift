@@ -786,7 +786,7 @@ extension InventoryTests { // Test Reduce
                 let result3 = try inventory.book(posting: transactionPosting(posting3))
                 XCTAssertNil(result1)
                 XCTAssertNil(result2)
-                XCTAssertEqual(result3, MultiCurrencyAmount(amounts: [TestUtils.cad: -11.1], decimalDigits: [TestUtils.cad: 2]))
+                XCTAssertEqual(result3, MultiCurrencyAmount(amounts: [TestUtils.cad: -11.1], decimalDigits: [TestUtils.cad: 1]))
             } catch {
                 XCTFail("Error thrown")
             }

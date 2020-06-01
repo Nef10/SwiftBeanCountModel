@@ -61,16 +61,13 @@ public struct MultiCurrencyAmount {
 
     /// Validates that the amount is the same in the MultiCurrencyAmount
     ///
-    /// Ignores other currencies in the MultiCurrencyAmount
+    /// Ignores other currencies in the MultiCurrencyAmount.
+    /// Uses the tolerance of the passed amount. The tolerance of the MultiCurrencyAmount is ignored.
     ///
     /// - Parameter amount: amount to validate
     /// - Returns: `ValidationResult`
     func validateOneAmountWithTolerance(amount: Amount) -> ValidationResult {
-        var decimalDigits = amount.multiCurrencyAmount.decimalDigits
-        decimalDigits[amount.commoditySymbol] = decimalDigitToKeep(amount.multiCurrencyAmount.decimalDigits[amount.commoditySymbol]!,
-                                                                   self.decimalDigits[amount.commoditySymbol])
-        return MultiCurrencyAmount.equalWithinTolerance(amount1: MultiCurrencyAmount(amounts: amount.multiCurrencyAmount.amounts,
-                                                                                     decimalDigits: decimalDigits), amount2: self)
+        return MultiCurrencyAmount.equalWithinTolerance(amount1: amount.multiCurrencyAmount, amount2: self)
     }
 
 }
@@ -129,21 +126,23 @@ func += (left: inout MultiCurrencyAmount, right: MultiCurrencyAmountRepresentabl
     left = left + right
 }
 
-/// Returns the number of decimals digits which is more precise
+/// Returns the number of decimals digits which is less precise
 ///
-/// If one of the numbers is zero it returns zero as this indicats no tolerance.
-/// Otherwise the higher number is more precise.
+/// If one of the numbers is zero this indicats no tolerance (e.g. very precise).
+/// So it returns the smaller number (= less precise), unless it is 0, in this
+/// case the highest number will be returned
 ///
 /// - Parameters:
 ///   - decimal1: first decimal
 ///   - decimal2: secons decimal
-/// - Returns: the decimal which indicats higher precision
+/// - Returns: the decimal which indicates lower precision
 private func decimalDigitToKeep(_ decimal1: Int, _ decimal2: Int?) -> Int {
     guard let decimal2 = decimal2 else {
         return decimal1
     }
-    if min(decimal1, decimal2) == 0 {
-        return 0
+    let minValue = min(decimal1, decimal2)
+    if minValue == 0 {
+        return max(decimal1, decimal2)
     }
-    return max(decimal1, decimal2)
+    return minValue
 }

@@ -64,19 +64,19 @@ class MultiCurrencyAmountTests: XCTestCase {
 
         var result = fiveEuro + fiveEuroZeroZero
         XCTAssertEqual(result.amounts[TestUtils.eur]!, 10)
-        XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 0)
+        XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 2)
         result = fiveEuro
         result += fiveEuroZeroZero
         XCTAssertEqual(result.amounts[TestUtils.eur]!, 10)
-        XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 0)
+        XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 2)
 
         result = fiveEuroZero + fiveEuroZeroZero
         XCTAssertEqual(result.amounts[TestUtils.eur]!, 10)
-        XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 2)
+        XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 1)
         result = fiveEuroZero
         result += fiveEuroZeroZero
         XCTAssertEqual(result.amounts[TestUtils.eur]!, 10)
-        XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 2)
+        XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 1)
 
         result = fiveCanadianDollar + fiveEuroZeroZero
         XCTAssertEqual(result.decimalDigits[TestUtils.eur]!, 2)
@@ -192,16 +192,15 @@ class MultiCurrencyAmountTests: XCTestCase {
 
         multiCurrencyAmount = MultiCurrencyAmount(amounts: [commoditySymbol: 0.000_05], decimalDigits: [commoditySymbol: 5])
         if case .invalid(let error) = multiCurrencyAmount.validateOneAmountWithTolerance(amount: amount) {
-            XCTAssertEqual(error, "-0.00005 CAD too much (0 tolerance)")
+            XCTAssertEqual(error, "-0.00005 CAD too much (0.000005 tolerance)")
         } else {
             XCTFail("\(multiCurrencyAmount) is valid")
         }
 
         amount = Amount(number: 0, commoditySymbol: commoditySymbol, decimalDigits: 1)
-        if case .invalid(let error) = multiCurrencyAmount.validateOneAmountWithTolerance(amount: amount) {
-            XCTAssertEqual(error, "-0.00005 CAD too much (0.000005 tolerance)")
-        } else {
-            XCTFail("\(multiCurrencyAmount) is valid")
+        guard case .valid = multiCurrencyAmount.validateOneAmountWithTolerance(amount: amount) else {
+            XCTFail("\(multiCurrencyAmount) is not valid")
+            return
         }
 
         amount = Amount(number: 0.000_05, commoditySymbol: commoditySymbol, decimalDigits: 5)
