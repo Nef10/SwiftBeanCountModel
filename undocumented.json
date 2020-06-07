@@ -1,12 +1,6 @@
 {
   "warnings": [
-    {
-      "file": "/Users/runner/runners/2.262.1/work/SwiftBeanCountModel/SwiftBeanCountModel/Sources/SwiftBeanCountModel/Account.swift",
-      "line": 102,
-      "symbol": "Account.bookingMethod",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    }
+
   ],
-  "source_directory": "/Users/runner/runners/2.262.1/work/SwiftBeanCountModel/SwiftBeanCountModel"
+  "source_directory": "/Users/runner/runners/2.263.0/work/SwiftBeanCountModel/SwiftBeanCountModel"
 }
