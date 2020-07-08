@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>BookingMethod Enumeration Reference</title>
+    <title>PostingError Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset="utf-8">
@@ -11,9 +11,9 @@
   </head>
   <body>
 
-    <a name="//apple_ref/swift/Enum/BookingMethod" class="dashAnchor"></a>
+    <a name="//apple_ref/swift/Enum/PostingError" class="dashAnchor"></a>
 
-    <a title="BookingMethod Enumeration Reference"></a>
+    <a title="PostingError Enumeration Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -42,7 +42,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="../index.html">SwiftBeanCountModel Reference</a>
       <img class="carat" src="../img/carat.png" />
-      BookingMethod Enumeration Reference
+      PostingError Enumeration Reference
     </p>
 
     <div class="content-wrapper">
@@ -180,19 +180,18 @@
 
         <section class="section">
           <div class="section-content top-matter">
-            <h1>BookingMethod</h1>
+            <h1>PostingError</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">BookingMethod</span></code></pre>
-<pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">BookingMethod</span><span class="p">:</span> <span class="kt">CustomStringConvertible</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PostingError</span> <span class="p">:</span> <span class="kt">Error</span></code></pre>
 
                 </div>
               </div>
-            <p>The Booking Method for an Inventory defines how ambiguous lot matches are handled</p>
+            <p>Errors an Posting can throw</p>
 
               <div class="slightly-smaller">
-                <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/Inventory.swift#L12-L19">Show on GitHub</a>
+                <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/TransactionPosting.swift#L12-L15">Show on GitHub</a>
               </div>
           </div>
         </section>
@@ -204,9 +203,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:19SwiftBeanCountModel13BookingMethodO6strictyA2CmF"></a>
-                    <a name="//apple_ref/swift/Element/strict" class="dashAnchor"></a>
-                    <a class="token" href="#/s:19SwiftBeanCountModel13BookingMethodO6strictyA2CmF">strict</a>
+                    <a name="/s:19SwiftBeanCountModel12PostingErrorO6noCostyACSScACmF"></a>
+                    <a name="//apple_ref/swift/Element/noCost(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:19SwiftBeanCountModel12PostingErrorO6noCostyACSScACmF">noCost(_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -214,108 +213,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>throw error for ambiguous matches</p>
+                        <p>if a posting adds to the an inventory without specifying an amount</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">strict</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="nf">noCost</span><span class="p">(</span><span class="kt">String</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/Inventory.swift#L14">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:19SwiftBeanCountModel13BookingMethodO4lifoyA2CmF"></a>
-                    <a name="//apple_ref/swift/Element/lifo" class="dashAnchor"></a>
-                    <a class="token" href="#/s:19SwiftBeanCountModel13BookingMethodO4lifoyA2CmF">lifo</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>last in first out</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">lifo</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/Inventory.swift#L16">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:19SwiftBeanCountModel13BookingMethodO4fifoyA2CmF"></a>
-                    <a name="//apple_ref/swift/Element/fifo" class="dashAnchor"></a>
-                    <a class="token" href="#/s:19SwiftBeanCountModel13BookingMethodO4fifoyA2CmF">fifo</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>first in first out</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">fifo</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/Inventory.swift#L18">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:s23CustomStringConvertibleP11descriptionSSvp"></a>
-                    <a name="//apple_ref/swift/Property/description" class="dashAnchor"></a>
-                    <a class="token" href="#/s:s23CustomStringConvertibleP11descriptionSSvp">description</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">description</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/Inventory.swift#L220-L229">Show on GitHub</a>
+                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/TransactionPosting.swift#L14">Show on GitHub</a>
                       </div>
                     </section>
                   </div>

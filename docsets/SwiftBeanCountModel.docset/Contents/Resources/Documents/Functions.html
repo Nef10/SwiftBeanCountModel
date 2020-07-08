@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Protocols  Reference</title>
+    <title>Functions  Reference</title>
     <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <meta charset="utf-8">
@@ -11,9 +11,9 @@
   </head>
   <body>
 
-    <a name="//apple_ref/swift/Section/Protocols" class="dashAnchor"></a>
+    <a name="//apple_ref/swift/Section/Functions" class="dashAnchor"></a>
 
-    <a title="Protocols  Reference"></a>
+    <a title="Functions  Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -42,7 +42,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="index.html">SwiftBeanCountModel Reference</a>
       <img class="carat" src="img/carat.png" />
-      Protocols  Reference
+      Functions  Reference
     </p>
 
     <div class="content-wrapper">
@@ -180,8 +180,8 @@
 
         <section class="section">
           <div class="section-content top-matter">
-            <h1>Protocols</h1>
-            <p>The following protocols are available globally.</p>
+            <h1>Functions</h1>
+            <p>The following functions are available globally.</p>
 
           </div>
         </section>
@@ -193,9 +193,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:19SwiftBeanCountModel11AccountItemP"></a>
-                    <a name="//apple_ref/swift/Protocol/AccountItem" class="dashAnchor"></a>
-                    <a class="token" href="#/s:19SwiftBeanCountModel11AccountItemP">AccountItem</a>
+                    <a name="/s:19SwiftBeanCountModel1poiyAA19MultiCurrencyAmountVAA0efG13Representable_p_AaE_ptF"></a>
+                    <a name="//apple_ref/swift/Function/+(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:19SwiftBeanCountModel1poiyAA19MultiCurrencyAmountVAA0efG13Representable_p_AaE_ptF">+(_:<wbr>_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -203,20 +203,58 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>AccountItems have a name item, which is the last part of the name</p>
+                        <p>Adds two <code><a href="Protocols/MultiCurrencyAmountRepresentable.html">MultiCurrencyAmountRepresentable</a></code>s into a MultiCurrencyAmount</p>
 
-                        <a href="Protocols/AccountItem.html" class="slightly-smaller">See more</a>
+<p>If the MultiCurrencyAmount of both MultiCurrencyAmountRepresentable contain an <code><a href="Structs/Amount.html">Amount</a></code> in the same <code><a href="Classes/Commodity.html">Commodity</a></code>
+the higher number of decimalDigits will be used to ensure the tolerance is correct, except one is 0 than 0 is used
+as it is more precise</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">AccountItem</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">+</span> <span class="p">(</span><span class="nv">left</span><span class="p">:</span> <span class="kt"><a href="Protocols/MultiCurrencyAmountRepresentable.html">MultiCurrencyAmountRepresentable</a></span><span class="p">,</span> <span class="nv">right</span><span class="p">:</span> <span class="kt"><a href="Protocols/MultiCurrencyAmountRepresentable.html">MultiCurrencyAmountRepresentable</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="Structs/MultiCurrencyAmount.html">MultiCurrencyAmount</a></span></code></pre>
 
                         </div>
                       </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>left</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>first MultiCurrencyAmountRepresentable, the multiAccountAmount will be added</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>right</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>second MultiCurrencyAmountRepresentable, the multiAccountAmount will be added</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>MultiCurrencyAmount which includes both amounts</p>
+                      </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/Account.swift#L40-L45">Show on GitHub</a>
+                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/MultiCurrencyAmount.swift#L125-L135">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
@@ -224,9 +262,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:19SwiftBeanCountModel32MultiCurrencyAmountRepresentableP"></a>
-                    <a name="//apple_ref/swift/Protocol/MultiCurrencyAmountRepresentable" class="dashAnchor"></a>
-                    <a class="token" href="#/s:19SwiftBeanCountModel32MultiCurrencyAmountRepresentableP">MultiCurrencyAmountRepresentable</a>
+                    <a name="/s:19SwiftBeanCountModel2peoiyyAA19MultiCurrencyAmountVz_AA0fgH13Representable_ptF"></a>
+                    <a name="//apple_ref/swift/Function/+=(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:19SwiftBeanCountModel2peoiyyAA19MultiCurrencyAmountVz_AA0fgH13Representable_ptF">+=(_:<wbr>_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -234,20 +272,50 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>protocol to describe objects which can be represented as <code><a href="Structs/MultiCurrencyAmount.html">MultiCurrencyAmount</a></code></p>
+                        <p>Adds the <code><a href="Structs/MultiCurrencyAmount.html">MultiCurrencyAmount</a></code> of a <code><a href="Protocols/MultiCurrencyAmountRepresentable.html">MultiCurrencyAmountRepresentable</a></code> to a <code><a href="Structs/MultiCurrencyAmount.html">MultiCurrencyAmount</a></code></p>
 
-                        <a href="Protocols/MultiCurrencyAmountRepresentable.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">MultiCurrencyAmountRepresentable</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="o">+=</span> <span class="p">(</span><span class="nv">left</span><span class="p">:</span> <span class="k">inout</span> <span class="kt"><a href="Structs/MultiCurrencyAmount.html">MultiCurrencyAmount</a></span><span class="p">,</span> <span class="nv">right</span><span class="p">:</span> <span class="kt"><a href="Protocols/MultiCurrencyAmountRepresentable.html">MultiCurrencyAmountRepresentable</a></span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>left</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>first MultiCurrencyAmount which at the same time will store the result</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>right</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>MultiCurrencyAmountRepresentable of which the multiAccountAmount will be added</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/MultiCurrencyAmount.swift#L12-L17">Show on GitHub</a>
+                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/master/Sources/SwiftBeanCountModel/MultiCurrencyAmount.swift#L142-L145">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
