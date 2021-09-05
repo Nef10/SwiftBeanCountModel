@@ -28,6 +28,7 @@ jobs:
       with:
         output-file: ./coverage/lcov.info
     - name: 'Read minimum coverage'
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: echo "min_coverage=$(cat ./.github/minimum_coverage.txt)" >> $GITHUB_ENV
     - name: Enforce test coverage threshhold
       if: ${{ matrix.os == 'ubuntu-latest' }}
