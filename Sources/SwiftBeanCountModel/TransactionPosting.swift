@@ -8,6 +8,14 @@
 
 import Foundation
 
+/// Type of price specification in posting
+public enum PostingPriceType {
+    /// Price per unit (@)
+    case perUnit
+    /// Total price (@@)
+    case total
+}
+
 /// Errors an Posting can throw
 public enum PostingError: Error {
     /// if a posting adds to the an inventory without specifying an amount
@@ -27,6 +35,9 @@ public class Posting {
     /// optional `Amount` which was paid to get this amount (should be in another `Commodity`)
     public let price: Amount?
 
+    /// Type of price specification for the price field
+    public let priceType: PostingPriceType
+
     /// optional `Cost` if the amount was aquired on a cost basis
     public let cost: Cost?
 
@@ -44,6 +55,24 @@ public class Posting {
         self.accountName = accountName
         self.amount = amount
         self.price = price
+        self.priceType = .perUnit
+        self.cost = cost
+        self.metaData = metaData
+    }
+
+    /// Creats an posting with the given parameters including price type
+    ///
+    /// - Parameters:
+    ///   - accountName: `AccountName`
+    ///   - amount: `Amount`
+    ///   - price: optional `Amount` which was paid to get this `amount`
+    ///   - priceType: type of price specification
+    ///   - cost: optional `Cost` which was paid to get this `amount`
+    public init(accountName: AccountName, amount: Amount, price: Amount?, priceType: PostingPriceType, cost: Cost? = nil, metaData: [String: String] = [:]) {
+        self.accountName = accountName
+        self.amount = amount
+        self.price = price
+        self.priceType = priceType
         self.cost = cost
         self.metaData = metaData
     }
@@ -64,7 +93,7 @@ public class TransactionPosting: Posting {
     ///   - transaction: the `Transaction` the posting is in - an *unowned* reference will be stored
     init(posting: Posting, transaction: Transaction) {
         self.transaction = transaction
-        super.init(accountName: posting.accountName, amount: posting.amount, price: posting.price, cost: posting.cost, metaData: posting.metaData)
+        super.init(accountName: posting.accountName, amount: posting.amount, price: posting.price, priceType: posting.priceType, cost: posting.cost, metaData: posting.metaData)
     }
 
     /// Returns the balance of a posting, this is the impact it has when you respect the cost or price
@@ -85,8 +114,14 @@ public class TransactionPosting: Posting {
             throw PostingError.noCost("Posting \(self) of transaction \(transaction) does not have an amount in the cost and adds to the inventory")
         }
         if let price {
-            return MultiCurrencyAmount(amounts: [price.commoditySymbol: price.number * amount.number],
-                                       decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
+            switch priceType {
+            case .perUnit:
+                return MultiCurrencyAmount(amounts: [price.commoditySymbol: price.number * amount.number],
+                                           decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
+            case .total:
+                return MultiCurrencyAmount(amounts: [price.commoditySymbol: price.number],
+                                           decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
+            }
         }
         return amount.multiCurrencyAmount
     }
@@ -102,7 +137,12 @@ extension Posting: CustomStringConvertible {
             result += " \(String(describing: cost))"
         }
         if let price {
-            result += " @ \(String(describing: price))"
+            switch priceType {
+            case .perUnit:
+                result += " @ \(String(describing: price))"
+            case .total:
+                result += " @@ \(String(describing: price))"
+            }
         }
         if !metaData.isEmpty {
             result += "\n\(metaData.map { "    \($0): \"\($1)\"" }.joined(separator: "\n"))"
@@ -123,7 +163,7 @@ extension Posting: Equatable {
     ///   - rhs: second posting
     /// - Returns: if the accountName, ammount, meta data and price are the same on both postings
     public static func == (lhs: Posting, rhs: Posting) -> Bool {
-        lhs.accountName == rhs.accountName && lhs.amount == rhs.amount && lhs.price == rhs.price && lhs.cost == rhs.cost && lhs.metaData == rhs.metaData
+        lhs.accountName == rhs.accountName && lhs.amount == rhs.amount && lhs.price == rhs.price && lhs.priceType == rhs.priceType && lhs.cost == rhs.cost && lhs.metaData == rhs.metaData
     }
 
 }
@@ -134,6 +174,7 @@ extension Posting: Hashable {
         hasher.combine(accountName)
         hasher.combine(amount)
         hasher.combine(price)
+        hasher.combine(priceType)
         hasher.combine(cost)
         hasher.combine(metaData)
     }

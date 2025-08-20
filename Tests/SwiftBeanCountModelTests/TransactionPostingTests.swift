@@ -98,4 +98,55 @@ final class TransactionPostingTests: XCTestCase {
         XCTAssertNotEqual(posting1, posting2)
     }
 
+    func testDescriptionTotalPrice() {
+        let amount = Amount(number: Decimal(1), commoditySymbol: "💵")
+        let price = Amount(number: Decimal(1.555), commoditySymbol: TestUtils.eur)
+        let posting = Posting(accountName: TestUtils.chequing, amount: amount, price: price, priceType: .total)
+
+        XCTAssertEqual(String(describing: posting), "  \(String(describing: TestUtils.chequing)) \(String(describing: amount)) @@ \(price)")
+    }
+
+    func testEqualRespectsPriceType() {
+        let price = Amount(number: Decimal(1.555), commoditySymbol: TestUtils.eur)
+        let posting2 = Posting(accountName: TestUtils.cash, amount: TestUtils.amount, price: price, priceType: .perUnit)
+        let posting3 = Posting(accountName: TestUtils.cash, amount: TestUtils.amount, price: price, priceType: .total)
+        XCTAssertNotEqual(posting2, posting3)
+    }
+
+    func testBalanceTotalPrice() throws {
+        let ledger = Ledger()
+        let transactionMetaData = TransactionMetaData(date: TestUtils.date20170609, payee: "", narration: "", flag: .complete, tags: [])
+        
+        // Test with total price: 10 units @@ 155.5 EUR total
+        let amount = Amount(number: Decimal(10), commoditySymbol: "💵")
+        let totalPrice = Amount(number: Decimal(155.5), commoditySymbol: TestUtils.eur)
+        let posting = Posting(accountName: TestUtils.cash, amount: amount, price: totalPrice, priceType: .total)
+        
+        let transaction = Transaction(metaData: transactionMetaData, postings: [posting])
+        let transactionPosting = TransactionPosting(posting: posting, transaction: transaction)
+        
+        let balance = try transactionPosting.balance(in: ledger)
+        
+        // Should be 155.5 EUR total (not 10 * 155.5 = 1555)
+        XCTAssertEqual(balance.amounts[TestUtils.eur], Decimal(155.5))
+    }
+
+    func testBalancePerUnitPrice() throws {
+        let ledger = Ledger()
+        let transactionMetaData = TransactionMetaData(date: TestUtils.date20170609, payee: "", narration: "", flag: .complete, tags: [])
+        
+        // Test with per-unit price: 10 units @ 15.55 EUR per unit
+        let amount = Amount(number: Decimal(10), commoditySymbol: "💵")
+        let perUnitPrice = Amount(number: Decimal(15.55), commoditySymbol: TestUtils.eur)
+        let posting = Posting(accountName: TestUtils.cash, amount: amount, price: perUnitPrice, priceType: .perUnit)
+        
+        let transaction = Transaction(metaData: transactionMetaData, postings: [posting])
+        let transactionPosting = TransactionPosting(posting: posting, transaction: transaction)
+        
+        let balance = try transactionPosting.balance(in: ledger)
+        
+        // Should be 10 * 15.55 = 155.5 EUR
+        XCTAssertEqual(balance.amounts[TestUtils.eur], Decimal(155.5))
+    }
+
 }
