@@ -149,4 +149,51 @@ final class TransactionPostingTests: XCTestCase {
         XCTAssertEqual(balance.amounts[TestUtils.eur], Decimal(155.5))
     }
 
+    func testIntegrationPerUnitAndTotalPrices() throws {
+        // Integration test showing @ and @@ working together
+        let ledger = Ledger()
+        let transactionMetaData = TransactionMetaData(date: TestUtils.date20170609, payee: "Test", narration: "Integration test", flag: .complete, tags: [])
+        
+        // Simple test: 10 USD @ 1.5 CAD per unit should equal 5 EUR @@ 7.5 CAD total
+        // Both should give us 15 CAD and 7.5 CAD respectively
+        
+        // 10 USD @ 1.5 CAD per unit = 15 CAD total
+        let amount1 = Amount(number: Decimal(10), commoditySymbol: TestUtils.usd)
+        let perUnitPrice = Amount(number: Decimal(1.5), commoditySymbol: TestUtils.cad)
+        let posting1 = Posting(accountName: TestUtils.cash, amount: amount1, price: perUnitPrice, priceType: .perUnit)
+        
+        // 5 EUR @@ 7.5 CAD total (which is 1.5 CAD per EUR)
+        let amount2 = Amount(number: Decimal(5), commoditySymbol: TestUtils.eur)
+        let totalPrice = Amount(number: Decimal(7.5), commoditySymbol: TestUtils.cad)
+        let posting2 = Posting(accountName: TestUtils.chequing, amount: amount2, price: totalPrice, priceType: .total)
+        
+        let transaction = Transaction(metaData: transactionMetaData, postings: [posting1, posting2])
+        
+        // Verify descriptions show correct format
+        XCTAssertTrue(String(describing: posting1).contains(" @ "))
+        XCTAssertTrue(String(describing: posting2).contains(" @@ "))
+        
+        // Verify both postings calculate to the same per-unit rate (1.5 CAD)
+        let posting1PerUnit = perUnitPrice.number
+        let posting2PerUnit = totalPrice.number / amount2.number
+        XCTAssertEqual(posting1PerUnit, posting2PerUnit)
+        
+        // Verify individual posting balances
+        let transactionPosting1 = TransactionPosting(posting: posting1, transaction: transaction)
+        let transactionPosting2 = TransactionPosting(posting: posting2, transaction: transaction)
+        
+        let balance1 = try transactionPosting1.balance(in: ledger)
+        let balance2 = try transactionPosting2.balance(in: ledger)
+        
+        // Verify posting 1: 10 USD @ 1.5 CAD = 15 CAD
+        XCTAssertEqual(balance1.amounts[TestUtils.cad], Decimal(15))
+        
+        // Verify posting 2: 5 EUR @@ 7.5 CAD = 7.5 CAD total
+        XCTAssertEqual(balance2.amounts[TestUtils.cad], Decimal(7.5))
+        
+        // The important part is that @@ uses total price, not per-unit * quantity
+        // If posting2 were using per-unit calculation, it would be 5 * 7.5 = 37.5 CAD
+        XCTAssertNotEqual(balance2.amounts[TestUtils.cad], Decimal(37.5))
+    }
+
 }
