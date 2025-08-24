@@ -36,10 +36,10 @@ public class Posting {
     /// `Amount` of the posting
     public let amount: Amount
 
-    /// Price amount per unit (always calculated as per-unit price)
+    /// Price amount per unit
     public let price: Amount?
     
-    /// Total price amount (calculated from per-unit if needed)
+    /// Total price amount
     public let totalPrice: Amount?
 
     /// Type of price specification for the original input
@@ -101,10 +101,9 @@ public class Posting {
             throw PostingError.priceTypeWithoutPrice
         }
         
-        // Set price type (default to nil if no price)
         self.priceType = priceType
         
-        // Calculate both per-unit and total prices based on input
+        // Calculate per-unit and total prices based on input
         if let price = price, let priceType = priceType {
             switch priceType {
             case .perUnit:
@@ -144,8 +143,7 @@ public class TransactionPosting: Posting {
         self.transaction = transaction
         // For existing postings, we need to reconstruct them properly
         // The original input price depends on the price type
-        if posting.price != nil {
-            // There's a price, determine the original input
+        if posting.priceType != nil {
             let originalPrice: Amount?
             switch posting.priceType {
             case .perUnit:
@@ -182,11 +180,9 @@ public class TransactionPosting: Posting {
         if let price = price, let totalPrice = totalPrice, let priceType = priceType {
             switch priceType {
             case .perUnit:
-                // Use per-unit price (always available as price property)
                 return MultiCurrencyAmount(amounts: [price.commoditySymbol: price.number * amount.number],
                                            decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
             case .total:
-                // Use total price to avoid rounding errors
                 return MultiCurrencyAmount(amounts: [totalPrice.commoditySymbol: totalPrice.number],
                                            decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
             }
@@ -269,7 +265,7 @@ extension Posting: Hashable {
         case .total:
             hasher.combine(totalPrice)
         case nil:
-            hasher.combine(nil as Amount?)
+            break
         }
     }
 
