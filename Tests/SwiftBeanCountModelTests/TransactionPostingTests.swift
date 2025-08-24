@@ -98,18 +98,18 @@ final class TransactionPostingTests: XCTestCase {
         XCTAssertNotEqual(posting1, posting2)
     }
 
-    func testDescriptionTotalPrice() {
+    func testDescriptionTotalPrice() throws {
         let amount = Amount(number: Decimal(1), commoditySymbol: "💵")
         let price = Amount(number: Decimal(1.555), commoditySymbol: TestUtils.eur)
-        let posting = Posting(accountName: TestUtils.chequing, amount: amount, price: price, priceType: .total)
+        let posting = try Posting(accountName: TestUtils.chequing, amount: amount, price: price, priceType: .total)
 
         XCTAssertEqual(String(describing: posting), "  \(String(describing: TestUtils.chequing)) \(String(describing: amount)) @@ \(price)")
     }
 
-    func testEqualRespectsPriceType() {
+    func testEqualRespectsPriceType() throws {
         let price = Amount(number: Decimal(1.555), commoditySymbol: TestUtils.eur)
-        let posting2 = Posting(accountName: TestUtils.cash, amount: TestUtils.amount, price: price, priceType: .perUnit)
-        let posting3 = Posting(accountName: TestUtils.cash, amount: TestUtils.amount, price: price, priceType: .total)
+        let posting2 = try Posting(accountName: TestUtils.cash, amount: TestUtils.amount, price: price, priceType: .perUnit)
+        let posting3 = try Posting(accountName: TestUtils.cash, amount: TestUtils.amount, price: price, priceType: .total)
         XCTAssertNotEqual(posting2, posting3)
     }
 
@@ -120,7 +120,7 @@ final class TransactionPostingTests: XCTestCase {
         // Test with total price: 10 units @@ 155.5 EUR total
         let amount = Amount(number: Decimal(10), commoditySymbol: "💵")
         let totalPrice = Amount(number: Decimal(155.5), commoditySymbol: TestUtils.eur)
-        let posting = Posting(accountName: TestUtils.cash, amount: amount, price: totalPrice, priceType: .total)
+        let posting = try Posting(accountName: TestUtils.cash, amount: amount, price: totalPrice, priceType: .total)
         
         let transaction = Transaction(metaData: transactionMetaData, postings: [posting])
         let transactionPosting = TransactionPosting(posting: posting, transaction: transaction)
@@ -138,7 +138,7 @@ final class TransactionPostingTests: XCTestCase {
         // Test with per-unit price: 10 units @ 15.55 EUR per unit
         let amount = Amount(number: Decimal(10), commoditySymbol: "💵")
         let perUnitPrice = Amount(number: Decimal(15.55), commoditySymbol: TestUtils.eur)
-        let posting = Posting(accountName: TestUtils.cash, amount: amount, price: perUnitPrice, priceType: .perUnit)
+        let posting = try Posting(accountName: TestUtils.cash, amount: amount, price: perUnitPrice, priceType: .perUnit)
         
         let transaction = Transaction(metaData: transactionMetaData, postings: [posting])
         let transactionPosting = TransactionPosting(posting: posting, transaction: transaction)
@@ -160,12 +160,12 @@ final class TransactionPostingTests: XCTestCase {
         // 10 USD @ 1.5 CAD per unit = 15 CAD total
         let amount1 = Amount(number: Decimal(10), commoditySymbol: TestUtils.usd)
         let perUnitPrice = Amount(number: Decimal(1.5), commoditySymbol: TestUtils.cad)
-        let posting1 = Posting(accountName: TestUtils.cash, amount: amount1, price: perUnitPrice, priceType: .perUnit)
+        let posting1 = try Posting(accountName: TestUtils.cash, amount: amount1, price: perUnitPrice, priceType: .perUnit)
         
         // 5 EUR @@ 7.5 CAD total (which is 1.5 CAD per EUR)
         let amount2 = Amount(number: Decimal(5), commoditySymbol: TestUtils.eur)
         let totalPrice = Amount(number: Decimal(7.5), commoditySymbol: TestUtils.cad)
-        let posting2 = Posting(accountName: TestUtils.chequing, amount: amount2, price: totalPrice, priceType: .total)
+        let posting2 = try Posting(accountName: TestUtils.chequing, amount: amount2, price: totalPrice, priceType: .total)
         
         let transaction = Transaction(metaData: transactionMetaData, postings: [posting1, posting2])
         

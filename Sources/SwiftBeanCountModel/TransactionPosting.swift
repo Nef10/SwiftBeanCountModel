@@ -20,6 +20,10 @@ public enum PostingPriceType {
 public enum PostingError: Error {
     /// if a posting adds to the an inventory without specifying an amount
     case noCost(String)
+    /// if a price is provided without a price type
+    case priceWithoutType
+    /// if a price type is provided without a price
+    case priceTypeWithoutPrice
 }
 
 /// A Posting contains an `AccountName` with the corresponding `Amount`,
@@ -32,10 +36,13 @@ public class Posting {
     /// `Amount` of the posting
     public let amount: Amount
 
-    /// optional `Amount` which was paid to get this amount (should be in another `Commodity`)
+    /// Price amount per unit (always calculated as per-unit price)
     public let price: Amount?
+    
+    /// Total price amount (calculated from per-unit if needed)
+    public let totalPrice: Amount?
 
-    /// Type of price specification for the price field
+    /// Type of price specification for the original input
     public let priceType: PostingPriceType
 
     /// optional `Cost` if the amount was aquired on a cost basis
@@ -51,13 +58,24 @@ public class Posting {
     ///   - amount: `Amount`
     ///   - price: optional `Amount` which was paid to get this `amount`
     ///   - cost: optional `Cost` which was paid to get this `amount`
+    @available(*, deprecated, message: "Use the init with priceType parameter instead")
     public init(accountName: AccountName, amount: Amount, price: Amount? = nil, cost: Cost? = nil, metaData: [String: String] = [:]) {
         self.accountName = accountName
         self.amount = amount
-        self.price = price
-        self.priceType = .perUnit
         self.cost = cost
         self.metaData = metaData
+        self.priceType = .perUnit
+        
+        // Calculate both per-unit and total prices
+        if let price = price {
+            self.price = price  // Assumed to be per-unit price
+            self.totalPrice = Amount(number: price.number * amount.number, 
+                                   commoditySymbol: price.commoditySymbol, 
+                                   decimalDigits: price.decimalDigits)
+        } else {
+            self.price = nil
+            self.totalPrice = nil
+        }
     }
 
     /// Creats an posting with the given parameters including price type
@@ -66,15 +84,46 @@ public class Posting {
     ///   - accountName: `AccountName`
     ///   - amount: `Amount`
     ///   - price: optional `Amount` which was paid to get this `amount`
-    ///   - priceType: type of price specification
+    ///   - priceType: optional type of price specification
     ///   - cost: optional `Cost` which was paid to get this `amount`
-    public init(accountName: AccountName, amount: Amount, price: Amount?, priceType: PostingPriceType, cost: Cost? = nil, metaData: [String: String] = [:]) {
+    /// - Throws: PostingError if price and priceType validation fails
+    public init(accountName: AccountName, amount: Amount, price: Amount?, priceType: PostingPriceType? = nil, cost: Cost? = nil, metaData: [String: String] = [:]) throws {
         self.accountName = accountName
         self.amount = amount
-        self.price = price
-        self.priceType = priceType
         self.cost = cost
         self.metaData = metaData
+        
+        // Validate price and priceType combination
+        if price != nil && priceType == nil {
+            throw PostingError.priceWithoutType
+        }
+        if price == nil && priceType != nil {
+            throw PostingError.priceTypeWithoutPrice
+        }
+        
+        // Set price type (default to perUnit if no price)
+        self.priceType = priceType ?? .perUnit
+        
+        // Calculate both per-unit and total prices based on input
+        if let price = price, let priceType = priceType {
+            switch priceType {
+            case .perUnit:
+                // Input is per-unit price, calculate total
+                self.price = price
+                self.totalPrice = Amount(number: price.number * amount.number, 
+                                       commoditySymbol: price.commoditySymbol, 
+                                       decimalDigits: price.decimalDigits)
+            case .total:
+                // Input is total price, calculate per-unit
+                self.totalPrice = price
+                self.price = Amount(number: price.number / amount.number, 
+                                  commoditySymbol: price.commoditySymbol, 
+                                  decimalDigits: price.decimalDigits)
+            }
+        } else {
+            self.price = nil
+            self.totalPrice = nil
+        }
     }
 
 }
@@ -93,7 +142,22 @@ public class TransactionPosting: Posting {
     ///   - transaction: the `Transaction` the posting is in - an *unowned* reference will be stored
     init(posting: Posting, transaction: Transaction) {
         self.transaction = transaction
-        super.init(accountName: posting.accountName, amount: posting.amount, price: posting.price, priceType: posting.priceType, cost: posting.cost, metaData: posting.metaData)
+        // For existing postings, we need to reconstruct them properly
+        // The original input price depends on the price type
+        if posting.price != nil {
+            // There's a price, determine the original input
+            let originalPrice: Amount?
+            switch posting.priceType {
+            case .perUnit:
+                originalPrice = posting.price
+            case .total:
+                originalPrice = posting.totalPrice
+            }
+            try! super.init(accountName: posting.accountName, amount: posting.amount, price: originalPrice, priceType: posting.priceType, cost: posting.cost, metaData: posting.metaData)
+        } else {
+            // No price
+            try! super.init(accountName: posting.accountName, amount: posting.amount, price: nil, priceType: nil, cost: posting.cost, metaData: posting.metaData)
+        }
     }
 
     /// Returns the balance of a posting, this is the impact it has when you respect the cost or price
@@ -113,13 +177,15 @@ public class TransactionPosting: Posting {
             }
             throw PostingError.noCost("Posting \(self) of transaction \(transaction) does not have an amount in the cost and adds to the inventory")
         }
-        if let price {
+        if let _ = price {
             switch priceType {
             case .perUnit:
-                return MultiCurrencyAmount(amounts: [price.commoditySymbol: price.number * amount.number],
+                // Use per-unit price (always available as price property)
+                return MultiCurrencyAmount(amounts: [price!.commoditySymbol: price!.number * amount.number],
                                            decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
             case .total:
-                return MultiCurrencyAmount(amounts: [price.commoditySymbol: price.number],
+                // Use total price to avoid rounding errors
+                return MultiCurrencyAmount(amounts: [totalPrice!.commoditySymbol: totalPrice!.number],
                                            decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
             }
         }
@@ -136,12 +202,12 @@ extension Posting: CustomStringConvertible {
         if let cost {
             result += " \(String(describing: cost))"
         }
-        if let price {
+        if let _ = price {
             switch priceType {
             case .perUnit:
-                result += " @ \(String(describing: price))"
+                result += " @ \(String(describing: price!))"
             case .total:
-                result += " @@ \(String(describing: price))"
+                result += " @@ \(String(describing: totalPrice!))"
             }
         }
         if !metaData.isEmpty {
@@ -163,7 +229,7 @@ extension Posting: Equatable {
     ///   - rhs: second posting
     /// - Returns: if the accountName, ammount, meta data and price are the same on both postings
     public static func == (lhs: Posting, rhs: Posting) -> Bool {
-        lhs.accountName == rhs.accountName && lhs.amount == rhs.amount && lhs.price == rhs.price && lhs.priceType == rhs.priceType && lhs.cost == rhs.cost && lhs.metaData == rhs.metaData
+        lhs.accountName == rhs.accountName && lhs.amount == rhs.amount && lhs.price == rhs.price && lhs.totalPrice == rhs.totalPrice && lhs.priceType == rhs.priceType && lhs.cost == rhs.cost && lhs.metaData == rhs.metaData
     }
 
 }
@@ -174,6 +240,7 @@ extension Posting: Hashable {
         hasher.combine(accountName)
         hasher.combine(amount)
         hasher.combine(price)
+        hasher.combine(totalPrice)
         hasher.combine(priceType)
         hasher.combine(cost)
         hasher.combine(metaData)
