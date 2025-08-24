@@ -306,6 +306,7 @@ final class LedgerTests: XCTestCase {
         ledgerWithPlugin.plugins.append("beancount.plugins.check_commodity")
         try ledgerWithPlugin.add(TestUtils.eurCommodity)
         XCTAssertFalse(ledgerWithPlugin.errors.isEmpty, "Commodity without opening date should be invalid when check_commodity plugin is enabled")
+        XCTAssertTrue(ledgerWithPlugin.errors.contains("Commodity EUR does not have an opening date"), "Should contain specific error message for EUR commodity")
     }
 
     func testCommodityValidationWithAutoCreatedCommodities() throws {
@@ -317,19 +318,19 @@ final class LedgerTests: XCTestCase {
             postings: [posting]
         )
         ledgerWithoutPlugin.add(transaction)
-        
+
         // Should have transaction validation error (unbalanced) but no commodity errors
         let commodityErrors = ledgerWithoutPlugin.errors.filter { $0.contains("does not have an opening date") }
         XCTAssertTrue(commodityErrors.isEmpty, "Auto-created commodities should not generate errors when plugin is not enabled")
-        
+
         // Test auto-created commodities with plugin
         let ledgerWithPlugin = Ledger()
         ledgerWithPlugin.plugins.append("beancount.plugins.check_commodity")
         ledgerWithPlugin.add(transaction)
-        
+
         // Should have both transaction validation error and commodity error
-        let commodityErrorsWithPlugin = ledgerWithPlugin.errors.filter { $0.contains("does not have an opening date") }
-        XCTAssertFalse(commodityErrorsWithPlugin.isEmpty, "Auto-created commodities should generate errors when plugin is enabled")
+        let expectedError = "Commodity USD does not have an opening date"
+        XCTAssertTrue(ledgerWithPlugin.errors.contains(expectedError), "Auto-created commodities should generate errors when plugin is enabled")
     }
 
     func testDescriptionTransactionsAccountsCommodities() throws {

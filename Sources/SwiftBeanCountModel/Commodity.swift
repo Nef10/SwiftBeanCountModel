@@ -34,28 +34,16 @@ public class Commodity {
         self.metaData = metaData
     }
 
-    /// Validates the commodity
-    ///
-    /// A commodity is valid if it has an opening date. Name and price are optional
-    ///
-    /// - Returns: `ValidationResult`
-    func validate() -> ValidationResult {
-        guard opening != nil else {
-            return .invalid("Commodity \(symbol) does not have an opening date")
-        }
-        return .valid
-    }
-
-    /// Validates the commodity in the context of enabled plugins
+    /// Validates the commodity in the context of a ledger
     ///
     /// If the beancount.plugins.check_commodity plugin is enabled, a commodity is only valid if it has an opening date.
     /// Otherwise, commodities are always valid regardless of opening date.
     ///
-    /// - Parameter enabledPlugins: Array of enabled plugins to check
+    /// - Parameter ledger: The ledger context containing enabled plugins
     /// - Returns: `ValidationResult`
-    func validate(enabledPlugins: [String]) -> ValidationResult {
+    func validate(in ledger: Ledger) -> ValidationResult {
         // Only check for opening date if the check_commodity plugin is enabled
-        if enabledPlugins.contains("beancount.plugins.check_commodity") {
+        if ledger.plugins.contains("beancount.plugins.check_commodity") {
             guard opening != nil else {
                 return .invalid("Commodity \(symbol) does not have an opening date")
             }
