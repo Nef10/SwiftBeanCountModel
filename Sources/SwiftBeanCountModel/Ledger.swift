@@ -179,6 +179,19 @@ public class Ledger {
                 result.append(error)
             }
         }
+        prices.forEach {
+            if case .invalid(let error) = $0.validate(in: self) {
+                result.append(error)
+            }
+        }
+        // Validate balance assertions
+        accounts.forEach { account in
+            account.balances.forEach { balance in
+                if case .invalid(let error) = balance.validate(in: self) {
+                    result.append(error)
+                }
+            }
+        }
         return result
     }
 
