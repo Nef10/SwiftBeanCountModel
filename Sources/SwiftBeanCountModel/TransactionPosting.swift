@@ -17,7 +17,7 @@ public enum PostingPriceType {
 }
 
 /// Errors an Posting can throw
-public enum PostingError: Error {
+public enum PostingError: Error, Equatable {
     /// if a posting adds to the an inventory without specifying an amount
     case noCost(String)
     /// if a price is provided without a price type
@@ -43,7 +43,7 @@ public class Posting {
     public let totalPrice: Amount?
 
     /// Type of price specification for the original input
-    public let priceType: PostingPriceType
+    public let priceType: PostingPriceType?
 
     /// optional `Cost` if the amount was aquired on a cost basis
     public let cost: Cost?
@@ -64,7 +64,7 @@ public class Posting {
         self.amount = amount
         self.cost = cost
         self.metaData = metaData
-        self.priceType = .perUnit
+        self.priceType = price != nil ? .perUnit : nil
         
         // Calculate both per-unit and total prices
         if let price = price {
@@ -101,8 +101,8 @@ public class Posting {
             throw PostingError.priceTypeWithoutPrice
         }
         
-        // Set price type (default to perUnit if no price)
-        self.priceType = priceType ?? .perUnit
+        // Set price type (default to nil if no price)
+        self.priceType = priceType
         
         // Calculate both per-unit and total prices based on input
         if let price = price, let priceType = priceType {
@@ -152,6 +152,8 @@ public class TransactionPosting: Posting {
                 originalPrice = posting.price
             case .total:
                 originalPrice = posting.totalPrice
+            case nil:
+                originalPrice = nil
             }
             try! super.init(accountName: posting.accountName, amount: posting.amount, price: originalPrice, priceType: posting.priceType, cost: posting.cost, metaData: posting.metaData)
         } else {
@@ -177,15 +179,15 @@ public class TransactionPosting: Posting {
             }
             throw PostingError.noCost("Posting \(self) of transaction \(transaction) does not have an amount in the cost and adds to the inventory")
         }
-        if let _ = price {
+        if let price = price, let totalPrice = totalPrice, let priceType = priceType {
             switch priceType {
             case .perUnit:
                 // Use per-unit price (always available as price property)
-                return MultiCurrencyAmount(amounts: [price!.commoditySymbol: price!.number * amount.number],
+                return MultiCurrencyAmount(amounts: [price.commoditySymbol: price.number * amount.number],
                                            decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
             case .total:
                 // Use total price to avoid rounding errors
-                return MultiCurrencyAmount(amounts: [totalPrice!.commoditySymbol: totalPrice!.number],
+                return MultiCurrencyAmount(amounts: [totalPrice.commoditySymbol: totalPrice.number],
                                            decimalDigits: [amount.commoditySymbol: amount.decimalDigits])
             }
         }
@@ -202,12 +204,12 @@ extension Posting: CustomStringConvertible {
         if let cost {
             result += " \(String(describing: cost))"
         }
-        if let _ = price {
+        if let price = price, let totalPrice = totalPrice, let priceType = priceType {
             switch priceType {
             case .perUnit:
-                result += " @ \(String(describing: price!))"
+                result += " @ \(String(describing: price))"
             case .total:
-                result += " @@ \(String(describing: totalPrice!))"
+                result += " @@ \(String(describing: totalPrice))"
             }
         }
         if !metaData.isEmpty {
@@ -229,7 +231,24 @@ extension Posting: Equatable {
     ///   - rhs: second posting
     /// - Returns: if the accountName, ammount, meta data and price are the same on both postings
     public static func == (lhs: Posting, rhs: Posting) -> Bool {
-        lhs.accountName == rhs.accountName && lhs.amount == rhs.amount && lhs.price == rhs.price && lhs.totalPrice == rhs.totalPrice && lhs.priceType == rhs.priceType && lhs.cost == rhs.cost && lhs.metaData == rhs.metaData
+        // First check basic properties
+        guard lhs.accountName == rhs.accountName && 
+              lhs.amount == rhs.amount && 
+              lhs.priceType == rhs.priceType && 
+              lhs.cost == rhs.cost && 
+              lhs.metaData == rhs.metaData else {
+            return false
+        }
+        
+        // Compare only the original input price to avoid comparing calculated values
+        switch lhs.priceType {
+        case .perUnit:
+            return lhs.price == rhs.price
+        case .total:
+            return lhs.totalPrice == rhs.totalPrice
+        case nil:
+            return lhs.price == nil && rhs.price == nil
+        }
     }
 
 }
@@ -239,11 +258,19 @@ extension Posting: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(accountName)
         hasher.combine(amount)
-        hasher.combine(price)
-        hasher.combine(totalPrice)
-        hasher.combine(priceType)
         hasher.combine(cost)
         hasher.combine(metaData)
+        hasher.combine(priceType)
+        
+        // Hash only the original input price to avoid hashing calculated values
+        switch priceType {
+        case .perUnit:
+            hasher.combine(price)
+        case .total:
+            hasher.combine(totalPrice)
+        case nil:
+            hasher.combine(nil as Amount?)
+        }
     }
 
 }
