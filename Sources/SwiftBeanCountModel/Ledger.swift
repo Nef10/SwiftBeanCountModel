@@ -185,7 +185,7 @@ public class Ledger {
             }
         }
         commodities.forEach {
-            if case .invalid(let error) = $0.validate() {
+            if case .invalid(let error) = $0.validate(in: self) {
                 result.append(error)
             }
         }
