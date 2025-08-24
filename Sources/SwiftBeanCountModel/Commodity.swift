@@ -46,6 +46,23 @@ public class Commodity {
         return .valid
     }
 
+    /// Validates the commodity in the context of enabled plugins
+    ///
+    /// If the beancount.plugins.check_commodity plugin is enabled, a commodity is only valid if it has an opening date.
+    /// Otherwise, commodities are always valid regardless of opening date.
+    ///
+    /// - Parameter enabledPlugins: Array of enabled plugins to check
+    /// - Returns: `ValidationResult`
+    func validate(enabledPlugins: [String]) -> ValidationResult {
+        // Only check for opening date if the check_commodity plugin is enabled
+        if enabledPlugins.contains("beancount.plugins.check_commodity") {
+            guard opening != nil else {
+                return .invalid("Commodity \(symbol) does not have an opening date")
+            }
+        }
+        return .valid
+    }
+
 }
 
 extension Commodity: CustomStringConvertible {
