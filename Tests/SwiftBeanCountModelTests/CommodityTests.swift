@@ -132,11 +132,11 @@ final class CommodityTests: XCTestCase {
         let ledgerWithPlugin = Ledger()
         ledgerWithPlugin.plugins.append("beancount.plugins.check_commodity")
 
-        if case .invalid(let error) = commodity.validateUsageDate(TestUtils.date20170608, in: ledgerWithPlugin) {
-            XCTAssertEqual(error, "Commodity EUR does not have an opening date")
-        } else {
-            XCTFail("Using commodity without opening date should be invalid when plugin is enabled")
+        guard case .valid = commodity.validateUsageDate(TestUtils.date20170608, in: ledgerWithPlugin) else {
+            XCTFail("Using commodity without opening date should be ignored in the validateUsageDate, as it is tested in the valdiate function")
+            return
         }
+
     }
 
 }
