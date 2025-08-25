@@ -50,6 +50,12 @@ public class Transaction {
             return commodityValidation
         }
 
+        // Validate sellgains if plugin is enabled
+        let sellgainsValidation = validateSellgains(in: ledger)
+        guard case .valid = sellgainsValidation else {
+            return sellgainsValidation
+        }
+
         for posting in postings {
             guard let account = ledger.accounts.first(where: { $0.name == posting.accountName }) else {
                 return .invalid("Account \(posting.accountName) does not exist in the ledger")
@@ -97,6 +103,100 @@ public class Transaction {
                     }
                 }
             }
+        }
+
+        return .valid
+    }
+
+    /// Validates sellgains for transactions with cost-based postings
+    ///
+    /// When the sellgains plugin is enabled, this validates that the proceeds from selling
+    /// inventory match the expected value based on the cost of the sold units.
+    ///
+    /// - Parameter ledger: The ledger context containing enabled plugins
+    /// - Returns: `ValidationResult`
+    private func validateSellgains(in ledger: Ledger) -> ValidationResult {
+        // Only validate if the sellgains plugin is enabled
+        guard ledger.plugins.contains("beancount.plugins.sellgains") else {
+            return .valid
+        }
+
+        // Find postings with cost that have negative amounts (indicating sales)
+        let sellPostings = postings.filter { posting in
+            posting.cost != nil && posting.amount.number.sign == .minus
+        }
+
+        // If no sell postings, validation passes
+        guard !sellPostings.isEmpty else {
+            return .valid
+        }
+
+        let expectedProceeds = calculateExpectedProceeds(from: sellPostings)
+        
+        let actualProceedsResult = calculateActualProceeds(excluding: sellPostings, in: ledger)
+        guard case .valid = actualProceedsResult.result,
+              let actualProceeds = actualProceedsResult.proceeds else {
+            return actualProceedsResult.result
+        }
+
+        return validateProceedsMatch(expected: expectedProceeds, actual: actualProceeds)
+    }
+
+    /// Calculates expected proceeds from cost-based sell postings
+    private func calculateExpectedProceeds(from sellPostings: [TransactionPosting]) -> MultiCurrencyAmount {
+        var expectedProceeds = MultiCurrencyAmount()
+
+        for posting in sellPostings {
+            guard let cost = posting.cost,
+                  let costAmount = cost.amount else {
+                continue
+            }
+
+            // Calculate proceeds: absolute value of sold amount * cost per unit
+            let soldAmount = abs(posting.amount.number)
+            let proceedsAmount = soldAmount * costAmount.number
+
+            expectedProceeds += Amount(number: proceedsAmount,
+                                       commoditySymbol: costAmount.commoditySymbol,
+                                       decimalDigits: costAmount.decimalDigits).multiCurrencyAmount
+        }
+
+        return expectedProceeds
+    }
+
+    /// Calculates actual proceeds excluding sell postings and Income accounts
+    private func calculateActualProceeds(excluding sellPostings: [TransactionPosting],
+                                         in ledger: Ledger) -> (proceeds: MultiCurrencyAmount?, result: ValidationResult) {
+        var actualProceeds = MultiCurrencyAmount()
+
+        for posting in postings {
+            // Skip the sell postings and Income accounts
+            if sellPostings.contains(posting) || posting.accountName.accountType == .income {
+                continue
+            }
+
+            do {
+                actualProceeds += try posting.balance(in: ledger)
+            } catch {
+                let errorMessage = "Failed to calculate balance for posting \(posting): \(error.localizedDescription)"
+                return (nil, .invalid(errorMessage))
+            }
+        }
+
+        return (actualProceeds, .valid)
+    }
+
+    /// Validates that expected and actual proceeds match within tolerance
+    private func validateProceedsMatch(expected: MultiCurrencyAmount, actual: MultiCurrencyAmount) -> ValidationResult {
+        // Compare expected vs actual proceeds
+        // Invert expected proceeds to subtract from actual proceeds
+        let negativeExpectedProceeds = MultiCurrencyAmount(amounts: expected.amounts.mapValues { -$0 },
+                                                            decimalDigits: expected.decimalDigits)
+        let difference = actual + negativeExpectedProceeds
+        let validation = difference.validateZeroWithTolerance()
+
+        if case .invalid(let error) = validation {
+            return .invalid("\(self) sellgains validation failed - \(error)")
         }
 
         return .valid
