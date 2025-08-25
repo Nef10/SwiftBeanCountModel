@@ -132,7 +132,7 @@ public class Transaction {
         }
 
         let expectedProceeds = calculateExpectedProceeds(from: sellPostings)
-        
+
         let actualProceedsResult = calculateActualProceeds(excluding: sellPostings, in: ledger)
         guard case .valid = actualProceedsResult.result,
               let actualProceeds = actualProceedsResult.proceeds else {
@@ -165,8 +165,10 @@ public class Transaction {
     }
 
     /// Calculates actual proceeds excluding sell postings and Income accounts
-    private func calculateActualProceeds(excluding sellPostings: [TransactionPosting],
-                                         in ledger: Ledger) -> (proceeds: MultiCurrencyAmount?, result: ValidationResult) {
+    private func calculateActualProceeds(
+        excluding sellPostings: [TransactionPosting],
+        in ledger: Ledger
+    ) -> (proceeds: MultiCurrencyAmount?, result: ValidationResult) {
         var actualProceeds = MultiCurrencyAmount()
 
         for posting in postings {
@@ -190,8 +192,10 @@ public class Transaction {
     private func validateProceedsMatch(expected: MultiCurrencyAmount, actual: MultiCurrencyAmount) -> ValidationResult {
         // Compare expected vs actual proceeds
         // Invert expected proceeds to subtract from actual proceeds
-        let negativeExpectedProceeds = MultiCurrencyAmount(amounts: expected.amounts.mapValues { -$0 },
-                                                            decimalDigits: expected.decimalDigits)
+        let negativeExpectedProceeds = MultiCurrencyAmount(
+            amounts: expected.amounts.mapValues { -$0 },
+            decimalDigits: expected.decimalDigits
+        )
         let difference = actual + negativeExpectedProceeds
         let validation = difference.validateZeroWithTolerance()
 
