@@ -121,7 +121,7 @@ final class TransactionTests: XCTestCase {
     func testIsValidInvalidPosting() throws {
         // Accounts are not opened
         let ledger = Ledger()
-        try ledger.add(Account(name: TestUtils.cash, opening: TestUtils.date20170609))
+        try ledger.add(Account(name: TestUtils.cash))
         try ledger.add(Account(name: TestUtils.chequing, opening: TestUtils.date20170608))
         ledger.add(transaction1WithPosting1And2)
         if case .invalid(let error) = transaction1WithPosting1And2.validate(in: ledger) {
