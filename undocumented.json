@@ -1,6 +1,19 @@
 {
   "warnings": [
-
+    {
+      "file": "/Users/runner/work/SwiftBeanCountModel/SwiftBeanCountModel/Sources/SwiftBeanCountModel/Account.swift",
+      "line": 96,
+      "symbol": "Account.nameSeperator",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/SwiftBeanCountModel/SwiftBeanCountModel/Sources/SwiftBeanCountModel/Amount.swift",
+      "line": 53,
+      "symbol": "Amount.amountString",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    }
   ],
   "source_directory": "/Users/runner/work/SwiftBeanCountModel/SwiftBeanCountModel"
 }

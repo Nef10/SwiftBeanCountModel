@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>PostingError Enumeration Reference</title>
+    <title>PostingPriceType Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset="utf-8">
@@ -11,9 +11,9 @@
   </head>
   <body>
 
-    <a name="//apple_ref/swift/Enum/PostingError" class="dashAnchor"></a>
+    <a name="//apple_ref/swift/Enum/PostingPriceType" class="dashAnchor"></a>
 
-    <a title="PostingError Enumeration Reference"></a>
+    <a title="PostingPriceType Enumeration Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -44,7 +44,7 @@
       <img class="carat" src="../img/carat.png" alt=""/>
       <a class="breadcrumb" href="../Enums.html">Enumerations</a>
       <img class="carat" src="../img/carat.png" alt=""/>
-      PostingError Enumeration Reference
+      PostingPriceType Enumeration Reference
     </p>
 
     <div class="content-wrapper">
@@ -185,18 +185,18 @@
 
         <section class="section">
           <div class="section-content top-matter">
-            <h1>PostingError</h1>
+            <h1>PostingPriceType</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PostingError</span> <span class="p">:</span> <span class="kt">Error</span><span class="p">,</span> <span class="kt">Equatable</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PostingPriceType</span></code></pre>
 
                 </div>
               </div>
-            <p>Errors an Posting can throw</p>
+            <p>Type of price specification in posting</p>
 
               <div class="slightly-smaller">
-                <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/main/Sources/SwiftBeanCountModel/TransactionPosting.swift#L20-L27">Show on GitHub</a>
+                <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/main/Sources/SwiftBeanCountModel/TransactionPosting.swift#L12-L17">Show on GitHub</a>
               </div>
           </div>
         </section>
@@ -208,9 +208,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:19SwiftBeanCountModel12PostingErrorO6noCostyACSScACmF"></a>
-                    <a name="//apple_ref/swift/Element/noCost(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:19SwiftBeanCountModel12PostingErrorO6noCostyACSScACmF">noCost(_:<wbr>)</a>
+                    <a name="/s:19SwiftBeanCountModel16PostingPriceTypeO7perUnityA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/perUnit" class="dashAnchor"></a>
+                    <a class="token" href="#/s:19SwiftBeanCountModel16PostingPriceTypeO7perUnityA2CmF">perUnit</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -218,19 +218,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>if a posting adds to the an inventory without specifying an amount</p>
+                        <p>Price per unit (@)</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="nf">noCost</span><span class="p">(</span><span class="kt">String</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">perUnit</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/main/Sources/SwiftBeanCountModel/TransactionPosting.swift#L22">Show on GitHub</a>
+                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/main/Sources/SwiftBeanCountModel/TransactionPosting.swift#L14">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
@@ -238,9 +238,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:19SwiftBeanCountModel12PostingErrorO16priceWithoutTypeyA2CmF"></a>
-                    <a name="//apple_ref/swift/Element/priceWithoutType" class="dashAnchor"></a>
-                    <a class="token" href="#/s:19SwiftBeanCountModel12PostingErrorO16priceWithoutTypeyA2CmF">priceWithoutType</a>
+                    <a name="/s:19SwiftBeanCountModel16PostingPriceTypeO5totalyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/total" class="dashAnchor"></a>
+                    <a class="token" href="#/s:19SwiftBeanCountModel16PostingPriceTypeO5totalyA2CmF">total</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -248,49 +248,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>if a price is provided without a price type</p>
+                        <p>Total price (@@)</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">priceWithoutType</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">total</span></code></pre>
 
                         </div>
                       </div>
                       <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/main/Sources/SwiftBeanCountModel/TransactionPosting.swift#L24">Show on GitHub</a>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:19SwiftBeanCountModel12PostingErrorO21priceTypeWithoutPriceyA2CmF"></a>
-                    <a name="//apple_ref/swift/Element/priceTypeWithoutPrice" class="dashAnchor"></a>
-                    <a class="token" href="#/s:19SwiftBeanCountModel12PostingErrorO21priceTypeWithoutPriceyA2CmF">priceTypeWithoutPrice</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>if a price type is provided without a price</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">priceTypeWithoutPrice</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div class="slightly-smaller">
-                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/main/Sources/SwiftBeanCountModel/TransactionPosting.swift#L26">Show on GitHub</a>
+                        <a href="https://github.com/Nef10/SwiftBeanCountModel/blob/main/Sources/SwiftBeanCountModel/TransactionPosting.swift#L16">Show on GitHub</a>
                       </div>
                     </section>
                   </div>
